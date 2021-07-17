@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class='div'>
+        WELCOME USER, CREATE AN ACCOUNT
+    </div>
+    
+    <div class='form'>
+        <form method='post'>
+
+            {% csrf_token %}
+            {{form.as_p}}
+
+            <button>Create an account</button>
+        </form>
+    </div>
+{% endblock %}

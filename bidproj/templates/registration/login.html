@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div class='div'>
+        WELCOME USER, SIGN IN
+    </div>
+    
+    <div class='form'>
+        <form method='post'>
+
+            {% csrf_token %}
+            {{form.as_p}}
+            <input type='hidden' name='next' value='{{next}}'>
+
+            <button>Sign in</button>
+        </form>
+    </div>
+{% endblock %}

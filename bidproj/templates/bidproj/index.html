@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div id='top'>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                var button = document.querySelector('#search')
+               
+
+                let search = document.querySelector('#searchbids')
+                //search.onkeyup = () => {
+                button.onclick = () => {
+                    if(search.value.length >= 1){
+                    button.disabled = false
+                    
+                    request = new XMLHttpRequest()
+                    var form = new FormData()
+                    form.append('csrfmiddlewaretoken', '{{ csrf_token}}')
+                    form.append('search', search.value)
+
+                    request.open('POST', '{% url "bidproj:index" %}')
+                    request.onload = () => {
+                        res = JSON.parse(request.responseText)
+                        //alert(JSON.stringify(res))
+                        let searchResults = document.querySelector('#searchResults')
+                       
+                        searchResults.classList.add('searchResults')
+                        if(eval(res.bids).length > 0){
+                            searchResults.innerHTML = '<h3>Search Results</h3><br>'
+                            for(item of eval(res.bids)){
+                                let result = document.createElement('div')
+                                result.classList.add('searchResult')
+                                // Add anchor here
+                                result.innerHTML = `${item.bid_name} uploaded by ${item.uploaded_by}`
+                                searchResults.appendChild(result)
+                            }
+                            }
+                            else{
+                                searchResults.innerHTML = "<h3>Ooops, we couldn't find your search</h3><br>"
+                            }
+                        
+                    }
+                    
+                    request.send(form)
+                }
+                    else{
+                        return false
+                        button.disabled = true
+                    }
+                }
+
+
+            })
+        </script>
+        <style>
+            .searchResults{
+                box-shadow: 1px 1px 8px 1px grey;
+                padding: 25px;
+                text-align: center;
+                margin: auto;
+                border-radius: 25px;
+                margin-top: 10px;
+            }
+
+            .searchResults div{
+                margin-bottom: 12px;
+                margin-top: 12px;
+                padding: 10px;
+                border-bottom: 1px solid rgb(240, 239, 239);
+
+            }
+
+
+            #top{
+                display: flex;
+                flex-wrap: wrap;
+                background-color: rgb(1, 1, 38);
+                color: rgb(241, 241, 247);
+                padding: 10px;
+            }
+            #top > h2{
+                width: 100%;
+            }
+            #top #indexSearches{
+                margin: auto;
+                /* display: flex;
+                flex-wrap: wrap; */
+
+            }
+            #indexSearches input{
+                height: 34px;
+                border-bottom-left-radius: 10px;
+                border-top-left-radius: 10px;
+                margin-right: 0px;
+                font-size: large;
+            }
+
+            #indexSearches button{
+                width: 60px;
+                height: 36px;
+                color: white;
+                
+                border-bottom-right-radius: 10px;
+                border-top-right-radius: 10px;
+                margin-left:0px;
+                background-color: lightseagreen;
+            }
+            
+            @media screen and (max-width: 800px){
+            #indexSearches input{
+                width: 75%;
+            }
+            
+
+            }
+            @media screen and (min-width: 801px){
+                .searchResults{
+                    width: 50%;
+                }
+                #indexSearches input{
+                width: 50%;}
+        
+            }
+
+        </style>
+        {% if request.user %}
+            <h2>Welcome {{request.user.username}}</h2>
+        {% endif %}
+
+        <div id='indexSearches'>
+            <h2>What do you want to to buy today</h2>
+            <div>
+                <input type='text' name='searchbids' id='searchbids'>
+                <button id='search'>Search</button>
+            </div>
+        </div>
+    </div>
+    <div id='searchResults'></div>
+
+    <div id='recentUploads'>
+        <style>
+            #recentUploads{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+            }
+
+            #recentUploads > h2{
+                width: 100%;
+                text-align: center;
+                padding: 15px;
+                box-shadow: 0px 0px 3px 0px grey;
+            }
+            #recentUploads #uploads{
+                padding: 10px;
+            }
+            
+            
+            .recentBids{
+               display: flex; 
+               flex-wrap: wrap;
+               box-shadow: 0px 1px 8px 1px grey;
+               cursor: pointer;
+
+            }
+            .recentBids:hover{
+                background-color:rgb(250, 250, 250);
+            }
+            #aboutProduct p{
+                font-size: x-large;
+                padding-bottom: 15px;
+                padding-left: 10px;
+                
+            }
+            #uploads{
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+            @media screen and (max-width: 800px){
+                .recentBids{
+                    width: 80%;
+                    margin: auto;
+                    margin-bottom: 20px;;
+                }
+                .productImg{
+                    width: 100%;
+
+                }
+                .productImg img{
+                    width: 100%;
+                }
+                #aboutProduct p{
+                    font-size: x-large;
+                    display: flex;
+                    flex-wrap: wrap;
+                    width: 100%;
+                
+            }
+            }
+            @media screen and (min-width: 800px){
+                .productImg{
+                    width: 40%;  
+                }
+                .productImg img{
+                    width: 100%;
+                }
+
+                .recentBids{
+                    width: 45%;
+                    border-bottom-right-radius: 20px;
+                    border-top-right-radius: 20px;
+                    
+                }
+            
+
+            }
+            #aboutProduct{
+                padding-bottom: 15px; 
+            }
+
+            #aboutProduct p{
+                
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            #aboutProduct span{
+                background-color: rgb(79, 125, 154);
+                
+                padding: 14px;
+                 color: white;
+            }
+            .hide{
+                display: none;
+            }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                recentBids = document.querySelectorAll('.recentBids')  
+                recentBids.forEach(function(bid){
+                    bid.onmouseover = function(){
+                        this.querySelector('span').classList.add('hide')
+                        this.querySelector('.displayOnHover').style.display = 'flex'
+                        this.querySelector('.displayOnHover').style.flexWrap = 'wrap'
+                    }
+                    bid.onmouseout = function(){
+                        this.querySelector('span').classList.remove('hide')
+                        this.querySelector('.displayOnHover').style.display = 'none'
+                    }
+                })
+            })
+        </script>
+        <h2>RECENTLY UPLOADED BIDS</h2>
+        <div id='uploads'>
+            {% if recentUploads %}
+                {% for bid in recentUploads %}
+                    <div class='recentBids'>
+                        <div class='productImg'>
+                            <img src='{{ bid.product_image }}'>
+                        </div>
+
+                        <div id='aboutProduct'>
+                            <p>{{ bid.product_name}}</p>
+                            <p>Uploaded By: {{ bid.uploaded_by }}</p>
+                            <p>Current Bid: {{ bid.current_bid }}</p>
+                            <span><strong>Learn more</strong></span>
+                            <p class='displayOnHover' style='display: none;'>Product Description: {{ bid.description }}</p>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
